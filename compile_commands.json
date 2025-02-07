@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/croutine.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/croutine.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/croutine.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/event_groups.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/event_groups.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/event_groups.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/list.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/list.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/list.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/queue.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/queue.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/queue.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/stream_buffer.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/stream_buffer.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/stream_buffer.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/tasks.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/tasks.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/tasks.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel.dir/timers.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/timers.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/timers.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/portable",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel_port.dir/ThirdParty/GCC/Posix/port.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/port.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/port.c"
+},
+{
+  "directory": "/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/portable",
+  "command": "/usr/bin/cc -DprojCOVERAGE_TEST=0 -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix -I/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils -I/home/bhraman/FreeRTOS-Kernel-Case-Study/include/. -isystem /home/bhraman/FreeRTOS-Kernel-Case-Study  -o CMakeFiles/freertos_kernel_port.dir/ThirdParty/GCC/Posix/utils/wait_for_event.c.o -c /home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils/wait_for_event.c",
+  "file": "/home/bhraman/FreeRTOS-Kernel-Case-Study/portable/ThirdParty/GCC/Posix/utils/wait_for_event.c"
+}
+]

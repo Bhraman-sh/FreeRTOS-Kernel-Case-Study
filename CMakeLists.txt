@@ -15,6 +15,10 @@ cmake_minimum_required(VERSION 3.15)
 # heap implementation. If the option is not set, the cmake will use no heap
 # implementation (e.g. when only static allocation is used).
 
+add_library(freertos_config INTERFACE)
+target_include_directories(freertos_config SYSTEM INTERFACE 
+    ~/FreeRTOS-Kernel-Case-Study)
+target_compile_definitions(freertos_config INTERFACE projCOVERAGE_TEST=0)
 # `freertos_config` target defines the path to FreeRTOSConfig.h and optionally other freertos based config files
 if(NOT TARGET freertos_config )
     if (NOT DEFINED FREERTOS_CONFIG_FILE_DIRECTORY )

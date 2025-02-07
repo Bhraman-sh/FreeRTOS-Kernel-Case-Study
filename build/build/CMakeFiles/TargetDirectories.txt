@@ -1,0 +1,8 @@
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/CMakeFiles/freertos_kernel.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/CMakeFiles/edit_cache.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/CMakeFiles/rebuild_cache.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/include/CMakeFiles/edit_cache.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/include/CMakeFiles/rebuild_cache.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/portable/CMakeFiles/freertos_kernel_port.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/portable/CMakeFiles/edit_cache.dir
+/home/bhraman/FreeRTOS-Kernel-Case-Study/build/build/portable/CMakeFiles/rebuild_cache.dir
