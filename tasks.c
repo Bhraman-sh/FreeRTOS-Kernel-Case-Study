@@ -376,6 +376,10 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
 {
     volatile StackType_t * pxTopOfStack; /**< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
 
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        const UBaseType_t uxTimeSlice;
+        UBaseType_t uxCurrentTimeSlice;
+    #endif
     #if ( portUSING_MPU_WRAPPERS == 1 )
         xMPU_SETTINGS xMPUSettings; /**< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
     #endif
@@ -719,6 +723,7 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
                                   const configSTACK_DEPTH_TYPE uxStackDepth,
                                   void * const pvParameters,
                                   UBaseType_t uxPriority,
+                                  UBaseType_t uxTimeSlice,
                                   TaskHandle_t * const pxCreatedTask,
                                   TCB_t * pxNewTCB,
                                   const MemoryRegion_t * const xRegions ) PRIVILEGED_FUNCTION;
@@ -739,6 +744,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                         const configSTACK_DEPTH_TYPE uxStackDepth,
                                         void * const pvParameters,
                                         UBaseType_t uxPriority,
+                                        UBaseType_t uxTimeSlice,
                                         StackType_t * const puxStackBuffer,
                                         StaticTask_t * const pxTaskBuffer,
                                         TaskHandle_t * const pxCreatedTask ) PRIVILEGED_FUNCTION;
@@ -773,6 +779,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                   const configSTACK_DEPTH_TYPE uxStackDepth,
                                   void * const pvParameters,
                                   UBaseType_t uxPriority,
+                                  UBaseType_t uxTimeSlice,
                                   TaskHandle_t * const pxCreatedTask ) PRIVILEGED_FUNCTION;
 #endif /* #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) */
 
@@ -1279,6 +1286,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                         const configSTACK_DEPTH_TYPE uxStackDepth,
                                         void * const pvParameters,
                                         UBaseType_t uxPriority,
+                                        UBaseType_t uxTimeSlice,
                                         StackType_t * const puxStackBuffer,
                                         StaticTask_t * const pxTaskBuffer,
                                         TaskHandle_t * const pxCreatedTask )
@@ -1318,7 +1326,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
             }
             #endif /* tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE */
 
-            prvInitialiseNewTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, pxCreatedTask, pxNewTCB, NULL );
+            prvInitialiseNewTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, uxTimeSlice, pxCreatedTask, pxNewTCB, NULL );
         }
         else
         {
@@ -1334,6 +1342,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                     const configSTACK_DEPTH_TYPE uxStackDepth,
                                     void * const pvParameters,
                                     UBaseType_t uxPriority,
+                                    UBaseType_t uxTimeSlice,
                                     StackType_t * const puxStackBuffer,
                                     StaticTask_t * const pxTaskBuffer )
     {
@@ -1342,7 +1351,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 
         traceENTER_xTaskCreateStatic( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, puxStackBuffer, pxTaskBuffer );
 
-        pxNewTCB = prvCreateStaticTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, puxStackBuffer, pxTaskBuffer, &xReturn );
+        pxNewTCB = prvCreateStaticTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, uxTimeSlice, puxStackBuffer, pxTaskBuffer, &xReturn );
 
         if( pxNewTCB != NULL )
         {
@@ -1437,6 +1446,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                   pxTaskDefinition->usStackDepth,
                                   pxTaskDefinition->pvParameters,
                                   pxTaskDefinition->uxPriority,
+                                  1U,
                                   pxCreatedTask, pxNewTCB,
                                   pxTaskDefinition->xRegions );
         }
@@ -1556,6 +1566,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                       pxTaskDefinition->usStackDepth,
                                       pxTaskDefinition->pvParameters,
                                       pxTaskDefinition->uxPriority,
+                                      1U,
                                       pxCreatedTask, pxNewTCB,
                                       pxTaskDefinition->xRegions );
             }
@@ -1645,6 +1656,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                                   const configSTACK_DEPTH_TYPE uxStackDepth,
                                   void * const pvParameters,
                                   UBaseType_t uxPriority,
+                                  UBaseType_t uxTimeSlice,
                                   TaskHandle_t * const pxCreatedTask )
     {
         TCB_t * pxNewTCB;
@@ -1731,7 +1743,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
             }
             #endif /* tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE */
 
-            prvInitialiseNewTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, pxCreatedTask, pxNewTCB, NULL );
+            prvInitialiseNewTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, uxTimeSlice, pxCreatedTask, pxNewTCB, NULL );
         }
 
         return pxNewTCB;
@@ -1743,6 +1755,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
                             const configSTACK_DEPTH_TYPE uxStackDepth,
                             void * const pvParameters,
                             UBaseType_t uxPriority,
+                            UBaseType_t uxTimeSlice,
                             TaskHandle_t * const pxCreatedTask )
     {
         TCB_t * pxNewTCB;
@@ -1750,7 +1763,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 
         traceENTER_xTaskCreate( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, pxCreatedTask );
 
-        pxNewTCB = prvCreateTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, pxCreatedTask );
+        pxNewTCB = prvCreateTask( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, uxTimeSlice, pxCreatedTask );
 
         if( pxNewTCB != NULL )
         {
@@ -1818,6 +1831,7 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
                                   const configSTACK_DEPTH_TYPE uxStackDepth,
                                   void * const pvParameters,
                                   UBaseType_t uxPriority,
+                                  UBaseType_t uxTimeSlice,
                                   TaskHandle_t * const pxCreatedTask,
                                   TCB_t * pxNewTCB,
                                   const MemoryRegion_t * const xRegions )
@@ -1930,6 +1944,13 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
     }
     #endif /* configUSE_MUTEXES */
 
+    #if ( configUSE_VARIABLE_TIME_SLICE )
+    {
+        pxNewTcb->uxTimeSlice = uxTimeSlice;
+        pxNewTcb->uxCurrentTimeSlice = uxTimeSlice;
+    }
+    #endif
+    
     vListInitialiseItem( &( pxNewTCB->xStateListItem ) );
     vListInitialiseItem( &( pxNewTCB->xEventListItem ) );
 
@@ -2372,8 +2393,8 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
 
         traceENTER_xTaskDelayUntil( pxPreviousWakeTime, xTimeIncrement );
 
-        configASSERT( pxPreviousWakeTime );
-        configASSERT( ( xTimeIncrement > 0U ) );
+    configASSERT( pxPreviousWakeTime );
+    configASSERT( ( xTimeIncrement > 0U ) );
 
         vTaskSuspendAll();
         {
@@ -3632,6 +3653,7 @@ static BaseType_t prvCreateIdleTasks( void )
                                                              uxIdleTaskStackSize,
                                                              ( void * ) NULL,
                                                              portPRIVILEGE_BIT, /* In effect ( tskIDLE_PRIORITY | portPRIVILEGE_BIT ), but tskIDLE_PRIORITY is zero. */
+                                                             1U,
                                                              pxIdleTaskStackBuffer,
                                                              pxIdleTaskTCBBuffer );
 
@@ -3652,6 +3674,7 @@ static BaseType_t prvCreateIdleTasks( void )
                                    configMINIMAL_STACK_SIZE,
                                    ( void * ) NULL,
                                    portPRIVILEGE_BIT, /* In effect ( tskIDLE_PRIORITY | portPRIVILEGE_BIT ), but tskIDLE_PRIORITY is zero. */
+                                   1U,
                                    &xIdleTaskHandles[ xCoreID ] );
         }
         #endif /* configSUPPORT_STATIC_ALLOCATION */
@@ -4860,7 +4883,17 @@ BaseType_t xTaskIncrementTick( void )
             {
                 if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > 1U )
                 {
-                    xSwitchRequired = pdTRUE;
+                    #if ( configUSE_VARIABLE_TIME_SLICE )
+                    {
+                        if ( --(pxCurrentTCB->uxCurrentTimeSlice) == 0U )
+                        {
+                            pxCurrentTCB->uxCurrentTimeSlice = pxCurrentTCBs->uxTimeSlice;
+                            xSwitchRequired = pdTRUE;
+                        }
+                    }
+                    #else
+                        xSwitchRequired = pdTRUE;
+                    #endif
                 }
                 else
                 {

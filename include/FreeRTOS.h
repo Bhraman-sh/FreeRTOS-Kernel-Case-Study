@@ -65,6 +65,11 @@
     #error Only one of configUSE_16_BIT_TICKS and configTICK_TYPE_WIDTH_IN_BITS must be defined in FreeRTOSConfig.h.  See the Configuration section of the FreeRTOS API documentation for details.
 #endif
 
+/* Define Macro for variable time slcing */
+#ifndef configUSE_VARIABLE_TIME_SLICE
+    #define configUSE_VARIABLE_TIME_SLICE 0
+#endif
+
 /* Define configTICK_TYPE_WIDTH_IN_BITS according to the
  * value of configUSE_16_BIT_TICKS for backward compatibility. */
 #ifndef configTICK_TYPE_WIDTH_IN_BITS

@@ -297,6 +297,7 @@
                                                           uxTimerTaskStackSize,
                                                           NULL,
                                                           ( ( UBaseType_t ) configTIMER_TASK_PRIORITY ) | portPRIVILEGE_BIT,
+                                                          1U,
                                                           pxTimerTaskStackBuffer,
                                                           pxTimerTaskTCBBuffer );
 
