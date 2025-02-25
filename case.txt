@@ -1,0 +1,92 @@
+The FreeRTOS kernel stores a list of tasks for each priority. If a higher priority task is ready to run, the scheduler will always switch to the higher priority task. If two tasks have the same priority, the scheduler will switch between them in a round-robin fashion. The scheduler will never switch to a lower priority task if a higher priority task is able to run.
+
+Now for tasks with same priority, the scheduler will give each task a single time slice (Round Robin). Thus we have modified the kernel slightly such that when same priority tasks are running, each task can be configured to run for different time slices.
+
+To add the feature, we have put the following modifications in the kernel code:
+ 
+1) Definition of new macro. (FreeRTOS.h)
+    #ifndef configUSE_VARIABLE_TIME_SLICE
+        #define configUSE_VARIABLE_TIME_SLICE    0
+    #endif
+
+2) Definition of new structure member in TCB_t structure. (tasks.c) 
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        TickType_t xTimeSlice;
+        TickType_t xTickTime; /**< The tick time remaining until the time slice expires. */
+    #endif
+
+    For above modification to work, we added following modification in xSTATIC_TCB sturcture. (FreeRTOS.h)
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        TickType_t xTimeSlice;
+        TickType_t xTickTime; /**< The tick time remaining until the time slice expires. */
+    #endif
+
+3) Definition of new api function. (tasks.c)
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        BaseType_t xSetTaskTimeSlice( const char *pcTaskName,
+                                            UBaseType_t uxPriority,
+                                            TickType_t xTimeSlice )
+        {
+            TCB_t *pxTCB;
+            List_t *pxList;
+            ListItem_t *pxListItem;
+
+            /* Check if the provided priority is valid. */
+            if( uxPriority >= configMAX_PRIORITIES )
+            {
+                return pdFAIL;
+            }
+
+            /* Access the ready list for the given priority. */
+            pxList = &pxReadyTasksLists[uxPriority];
+
+            /* Iterate through the ready list. */
+            for( pxListItem = listGET_HEAD_ENTRY( pxList );
+                 pxListItem != listGET_END_MARKER( pxList );
+                 pxListItem = listGET_NEXT( pxListItem ) )
+            {
+                /* Get the TCB from the list item. */
+                pxTCB = ( TCB_t * ) listGET_LIST_ITEM_OWNER( pxListItem );
+
+                /* Compare task names. */
+                if( strcmp( pxTCB->pcTaskName, pcTaskName ) == 0 )
+                {
+                    /* Set the new time slice value. */
+                    pxTCB->xTimeSlice = xTimeSlice;
+                    pxTCB->xTickTime = xTimeSlice;
+                    return pdPASS;
+                }
+            }
+
+            /* Task not found in the specified priority list. */
+            return pdFAIL;
+        }
+    #endif /* configUSE_VARIABLE_TIME_SLICE */
+
+4) Modification in prvInitialiseNewTask() function. (tasks.c)
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+    {
+        pxNewTCB->xTimeSlice = configDEFAULT_TIME_SLICE;
+        pxNewTCB->xTickTime = configDEFAULT_TIME_SLICE;
+    }
+    #endif
+    configDEFAULT_TIME_SLICE is defined in task.c as 1.
+
+5) Modification to xTaskIncrementTick() function. (tasks.c)
+
+    if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > 1U )
+    {
+        #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+            if ( --(pxCurrentTCB->xTickTime) == (TickType_t) 0U || (pxCurrentTCB->xTickTime < (TickType_t) 0U) )
+            {
+                xSwitchRequired = pdTRUE;
+                pxCurrentTCB->xTickTime = pxCurrentTCB->xTimeSlice;
+            }
+        #else 
+            xSwitchRequired = pdTRUE;
+        #endif
+    }
+    else
+    {
+        mtCOVERAGE_TEST_MARKER();
+    }

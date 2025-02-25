@@ -2896,6 +2896,10 @@
     #error configUSE_PORT_OPTIMISED_TASK_SELECTION is not supported in SMP FreeRTOS
 #endif
 
+#ifndef configUSE_VARIABLE_TIME_SLICE
+    #define configUSE_VARIABLE_TIME_SLICE    0
+#endif
+
 #ifndef configINITIAL_TICK_COUNT
     #define configINITIAL_TICK_COUNT    0
 #endif
@@ -3170,6 +3174,12 @@ typedef struct xSTATIC_TCB
     #if ( configUSE_CORE_AFFINITY == 1 ) && ( configNUMBER_OF_CORES > 1 )
         UBaseType_t uxDummy26;
     #endif
+    
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        TickType_t xTimeSlice;
+        TickType_t xTickTime; /**< The tick time remaining until the time slice expires. */
+    #endif
+
     StaticListItem_t xDummy3[ 2 ];
     UBaseType_t uxDummy5;
     void * pxDummy6;

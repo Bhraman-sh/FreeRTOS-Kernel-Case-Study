@@ -15,4 +15,5 @@
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
 
+#define configUSE_VARIABLE_TIME_SLICE           0
 #endif /* FREERTOS_CONFIG_H */

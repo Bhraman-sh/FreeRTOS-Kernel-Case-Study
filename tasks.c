@@ -28,6 +28,7 @@
 
 /* Standard includes. */
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
@@ -382,6 +383,11 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
 
     #if ( configUSE_CORE_AFFINITY == 1 ) && ( configNUMBER_OF_CORES > 1 )
         UBaseType_t uxCoreAffinityMask; /**< Used to link the task to certain cores.  UBaseType_t must have greater than or equal to the number of bits as configNUMBER_OF_CORES. */
+    #endif
+
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+        TickType_t xTimeSlice;
+        TickType_t xTickTime; /**< The tick time remaining until the time slice expires. */
     #endif
 
     ListItem_t xStateListItem;                  /**< The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
@@ -1737,7 +1743,6 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
         return pxNewTCB;
     }
 /*-----------------------------------------------------------*/
-
     BaseType_t xTaskCreate( TaskFunction_t pxTaskCode,
                             const char * const pcName,
                             const configSTACK_DEPTH_TYPE uxStackDepth,
@@ -1747,6 +1752,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
     {
         TCB_t * pxNewTCB;
         BaseType_t xReturn;
+        printf("xTaskCreate\n");
 
         traceENTER_xTaskCreate( pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, pxCreatedTask );
 
@@ -1774,7 +1780,7 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
         return xReturn;
     }
 /*-----------------------------------------------------------*/
-
+/*-----------------------------------------------------------*/
     #if ( ( configNUMBER_OF_CORES > 1 ) && ( configUSE_CORE_AFFINITY == 1 ) )
         BaseType_t xTaskCreateAffinitySet( TaskFunction_t pxTaskCode,
                                            const char * const pcName,
@@ -1812,6 +1818,47 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
 
 #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
 /*-----------------------------------------------------------*/
+
+#if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+    BaseType_t xSetTaskTimeSlice( const char *pcTaskName,
+                                        UBaseType_t uxPriority,
+                                        TickType_t xTimeSlice )
+    {
+        TCB_t *pxTCB;
+        List_t *pxList;
+        ListItem_t *pxListItem;
+
+        /* Check if the provided priority is valid. */
+        if( uxPriority >= configMAX_PRIORITIES )
+        {
+            return pdFAIL;
+        }
+
+        /* Access the ready list for the given priority. */
+        pxList = &pxReadyTasksLists[uxPriority];
+
+        /* Iterate through the ready list. */
+        for( pxListItem = listGET_HEAD_ENTRY( pxList );
+             pxListItem != listGET_END_MARKER( pxList );
+             pxListItem = listGET_NEXT( pxListItem ) )
+        {
+            /* Get the TCB from the list item. */
+            pxTCB = ( TCB_t * ) listGET_LIST_ITEM_OWNER( pxListItem );
+
+            /* Compare task names. */
+            if( strcmp( pxTCB->pcTaskName, pcTaskName ) == 0 )
+            {
+                /* Set the new time slice value. */
+                pxTCB->xTimeSlice = xTimeSlice;
+                pxTCB->xTickTime = xTimeSlice;
+                return pdPASS;
+            }
+        }
+
+        /* Task not found in the specified priority list. */
+        return pdFAIL;
+    }
+#endif /* configUSE_VARIABLE_TIME_SLICE */
 
 static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
                                   const char * const pcName,
@@ -1930,6 +1977,12 @@ static void prvInitialiseNewTask( TaskFunction_t pxTaskCode,
     }
     #endif /* configUSE_MUTEXES */
 
+    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+    {
+        pxNewTCB->xTimeSlice = configDEFAULT_TIME_SLICE;
+        pxNewTCB->xTickTime = configDEFAULT_TIME_SLICE;
+    }
+    #endif
     vListInitialiseItem( &( pxNewTCB->xStateListItem ) );
     vListInitialiseItem( &( pxNewTCB->xEventListItem ) );
 
@@ -3685,6 +3738,7 @@ static BaseType_t prvCreateIdleTasks( void )
 void vTaskStartScheduler( void )
 {
     BaseType_t xReturn;
+    printf("Scheduler Started\n");
 
     traceENTER_vTaskStartScheduler();
 
@@ -4724,6 +4778,8 @@ BaseType_t xTaskIncrementTick( void )
     TickType_t xItemValue;
     BaseType_t xSwitchRequired = pdFALSE;
 
+    //printf("Tick\n");
+
     traceENTER_xTaskIncrementTick();
 
     /* Called by the portable layer each time a tick interrupt occurs.
@@ -4860,7 +4916,15 @@ BaseType_t xTaskIncrementTick( void )
             {
                 if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > 1U )
                 {
-                    xSwitchRequired = pdTRUE;
+                    #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
+                        if ( --(pxCurrentTCB->xTickTime) == (TickType_t) 0U || (pxCurrentTCB->xTickTime < (TickType_t) 0U) )
+                        {
+                            xSwitchRequired = pdTRUE;
+                            pxCurrentTCB->xTickTime = pxCurrentTCB->xTimeSlice;
+                        }
+                    #else 
+                        xSwitchRequired = pdTRUE;
+                    #endif
                 }
                 else
                 {

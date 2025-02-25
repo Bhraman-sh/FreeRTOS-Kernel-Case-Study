@@ -35,6 +35,7 @@
 #endif
 
 #include "list.h"
+#include <string.h>
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -46,6 +47,7 @@
 * MACROS AND DEFINITIONS
 *----------------------------------------------------------*/
 
+#define configDEFAULT_TIME_SLICE                ( (TickType_t) 1U )
 /*
  * If tskKERNEL_VERSION_NUMBER ends with + it represents the version in development
  * after the numbered release.
@@ -381,6 +383,7 @@ typedef enum
  * \defgroup xTaskCreate xTaskCreate
  * \ingroup Tasks
  */
+
 #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
     BaseType_t xTaskCreate( TaskFunction_t pxTaskCode,
                             const char * const pcName,
@@ -388,6 +391,13 @@ typedef enum
                             void * const pvParameters,
                             UBaseType_t uxPriority,
                             TaskHandle_t * const pxCreatedTask ) PRIVILEGED_FUNCTION;
+
+#endif /* configSUPPORT_DYNAMIC_ALLOCATION */
+
+#if ( configUSE_VARIABLE_TIME_SLICE == 1 ) 
+    BaseType_t xSetTaskTimeSlice( const char *pcTaskName,
+                                    UBaseType_t uxPriority,
+                                    TickType_t xTimeSlice ) ;
 #endif
 
 #if ( ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) && ( configNUMBER_OF_CORES > 1 ) && ( configUSE_CORE_AFFINITY == 1 ) )
