@@ -4917,7 +4917,7 @@ BaseType_t xTaskIncrementTick( void )
                 if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > 1U )
                 {
                     #if ( configUSE_VARIABLE_TIME_SLICE == 1 )
-                        if ( --(pxCurrentTCB->xTickTime) == (TickType_t) 0U || (pxCurrentTCB->xTickTime < (TickType_t) 0U) )
+                        if ( --(pxCurrentTCB->xTickTime) == (TickType_t) 0U || (pxCurrentTCB->xTickTime > pxCurrentTCB->xTimeSlice) )
                         {
                             xSwitchRequired = pdTRUE;
                             pxCurrentTCB->xTickTime = pxCurrentTCB->xTimeSlice;
