@@ -17,6 +17,4 @@ Clone this repository and configure FreeRTOS to enable the variable time slice f
 
 Compile and run your FreeRTOS project to see the effects of the new scheduling mechanism.
 
-## Contributions
-This fork is maintained as part of a research project. Contributions and discussions are welcome!
-
+## Branch 'new_changes' contains the working code
